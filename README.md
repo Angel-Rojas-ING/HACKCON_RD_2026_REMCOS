@@ -1,4 +1,4 @@
-# 🎯 Análisis Forense de Remcos RAT - HACKCON_RD 2026
+#  Análisis de la campaña de Remcos RAT - HACKCON_RD 2026
 
 <div align="center">
 
@@ -6,7 +6,7 @@
 ![DFIR](https://img.shields.io/badge/DFIR-Analysis-blue?style=for-the-badge)
 ![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK-orange?style=for-the-badge)
 
-**Repositorio de recursos y muestras de la charla sobre análisis forense de Remcos RAT**
+**Repositorio de recursos y muestras de la charla sobre análisis de la campaña de Remcos RAT**
 
 [![GitHub](https://img.shields.io/github/stars/Angel-Rojas-ING/HACKCON_RD_2026_REMCOS?style=social)](https://github.com/Angel-Rojas-ING/HACKCON_RD_2026_REMCOS)
 
@@ -14,19 +14,19 @@
 
 ---
 
-## 📋 Descripción
+##  Descripción
 
-Este repositorio contiene el material completo del análisis forense digital (DFIR) de una campaña de **Remcos RAT** distribuida mediante un dropper Delphi llamado **SyAlpha16.exe**. El análisis incluye la cadena de infección completa desde el vector inicial (HTA) hasta la persistencia del RAT, con mapeo completo a MITRE ATT&CK.
+Este repositorio contiene el material completo del análisis de la campaña digital (DFIR) de una campaña de **Remcos RAT** distribuida mediante un dropper Delphi llamado **SyAlpha16.exe**. El análisis incluye la cadena de infección completa desde el vector inicial (HTA) hasta la persistencia del RAT, con mapeo completo a MITRE ATT&CK.
 
-### 🎤 Sobre la Charla
+###  Sobre la Charla
 
 **Evento:** HACKCON_RD 2026  
-**Tema:** Análisis Forense de Remware - Remcos RAT  
+**Tema:** Análisis de la campaña de Remcos RAT  
 **Enfoque:** Análisis práctico de malware, técnicas de evasión, y threat hunting
 
 ---
 
-## 🔍 Resumen del Análisis
+##  Resumen del Análisis
 
 ### Cadena de Infección
 
@@ -52,9 +52,9 @@ Este repositorio contiene el material completo del análisis forense digital (DF
 
 ---
 
-## 📁 Contenido del Repositorio
+##  Contenido del Repositorio
 
-### 📄 Documentación
+###  Documentación
 
 | Archivo | Descripción |
 |---------|-------------|
@@ -62,17 +62,17 @@ Este repositorio contiene el material completo del análisis forense digital (DF
 | **[MITRE_ATTACK_MATRIX_REMCOS.md](./MITRE_ATTACK_MATRIX_REMCOS.md)** | Matriz MITRE ATT&CK con mapeo completo de técnicas observadas |
 | **[REGLA_YARA.yar](./REGLA_YARA.yar)** | Reglas YARA para detección de variantes de Remcos RAT |
 
-### 🗂️ Muestras
+###  Muestras
 
 | Archivo | Descripción |
 |---------|-------------|
-| **[CAMPAÑA_REMCOS_MUESTRAS.7z](./CAMPAÑA_REMCOS_MUESTRAS.7z)** | Archivo comprimido con muestras de la campaña (⚠️ **SOLO PARA ENTORNOS AISLADOS**) |
+| **[CAMPAÑA_REMCOS_MUESTRAS.7z](./CAMPAÑA_REMCOS_MUESTRAS.7z)** | Archivo comprimido con muestras de la campaña ( **SOLO PARA ENTORNOS AISLADOS PASS (infected)**) |
 
-> ⚠️ **ADVERTENCIA:** Las muestras contenidas en este repositorio son **MALWARE REAL**. Solo deben ser analizadas en entornos de análisis aislados (sandbox, máquinas virtuales desconectadas, laboratorios de malware). El autor no se hace responsable del uso indebido de este material.
+>  **ADVERTENCIA:** Las muestras contenidas en este repositorio son **MALWARE REAL**. Solo deben ser analizadas en entornos de análisis aislados (sandbox, máquinas virtuales desconectadas, laboratorios de malware). El autor no se hace responsable del uso indebido de este material.
 
 ---
 
-## 🎯 Indicadores Clave
+##  Indicadores Clave
 
 ### Hash Principal
 ```
@@ -91,7 +91,7 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 
 ---
 
-## 🛡️ Técnicas MITRE ATT&CK Observadas
+##  Técnicas MITRE ATT&CK Observadas
 
 ### Distribución por Táctica
 
@@ -116,11 +116,11 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 4. **T1027.002** - Software Packing (DLL cifrada)
 5. **T1573.001** - Encrypted Channel (RC4)
 
-> 📖 Ver la [matriz completa de MITRE ATT&CK](./MITRE_ATTACK_MATRIX_REMCOS.md) para detalles detallados.
+>  Ver la [matriz completa de MITRE ATT&CK](./MITRE_ATTACK_MATRIX_REMCOS.md) para detalles detallados.
 
 ---
 
-## 🔬 Metodología de Análisis
+##  Metodología de Análisis
 
 ### Herramientas Utilizadas
 
@@ -136,31 +136,20 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 - `FrameTrac32.DMP` - Volcado de memoria del proceso RAT
 - Análisis estático y dinámico del HTA y dropper
 
----
-
-## 🎓 Aprendizajes Clave
-
-### Técnicas de Evasión Observadas
-
-1. **Timestomping** - Falsificación de timestamps (LastWriteTime)
-2. **Masquerading** - Camuflaje como "Smart Game Booster"
-3. **Process Hollowing** - Inyección temprana de DLL
-4. **Obfuscation** - Ofuscación XOR en HTA, variables aleatorias
-5. **Persistence Redundancy** - Múltiples mecanismos de persistencia
 
 ### Capacidades del RAT
 
-- ✅ Keylogging (offline y online)
-- ✅ Captura de pantalla
-- ✅ Captura de audio (micrófono)
-- ✅ Monitoreo de portapapeles
-- ✅ Control remoto completo
-- ✅ UAC Bypass preparado
-- ✅ Evasión de Windows Defender
+-  Keylogging (offline y online)
+-  Captura de pantalla
+-  Captura de audio (micrófono)
+-  Monitoreo de portapapeles
+-  Control remoto completo
+-  UAC Bypass preparado
+-  Evasión de Windows Defender
 
 ---
 
-## 🚀 Uso de los Recursos
+##  Uso de los Recursos
 
 ### Para Threat Hunters
 
@@ -176,13 +165,13 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 
 ### Para Investigadores
 
-1. Descarga las muestras (⚠️ **SOLO EN ENTORNO AISLADO**)
+1. Descarga las muestras ( **SOLO EN ENTORNO AISLADO**)
 2. Reproduce el análisis usando la metodología documentada
 3. Contribuye con mejoras a las reglas YARA
 
 ---
 
-## 📊 Estadísticas del Análisis
+##  Estadísticas del Análisis
 
 - **Eventos analizados:** 8,165 (Process Monitor)
 - **Procesos involucrados:** 4 etapas
@@ -193,46 +182,37 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 
 ---
 
-## 🤝 Contribuciones
+##  Contribuciones
 
 Este repositorio es parte del material de la charla **HACKCON_RD 2026**. Si encuentras errores, mejoras o quieres contribuir con reglas YARA adicionales, las contribuciones son bienvenidas.
 
-### Cómo Contribuir
 
-1. Fork el repositorio
-2. Crea una rama para tu contribución (`git checkout -b feature/mejora`)
-3. Commit tus cambios (`git commit -am 'Agrega mejora'`)
-4. Push a la rama (`git push origin feature/mejora`)
-5. Abre un Pull Request
-
----
-
-## ⚖️ Disclaimer Legal
+##  Disclaimer Legal
 
 Este repositorio contiene material educativo y de investigación sobre análisis de malware. El propósito es:
 
-- ✅ Educación y concienciación en seguridad
-- ✅ Investigación en ciberseguridad
-- ✅ Desarrollo de capacidades de detección y respuesta
+-  Educación y concienciación en seguridad
+-  Investigación en ciberseguridad
+-  Desarrollo de capacidades de detección y respuesta
 
 **NO debe ser usado para:**
-- ❌ Actividades maliciosas
-- ❌ Compromiso no autorizado de sistemas
-- ❌ Cualquier actividad ilegal
+-  Actividades maliciosas
+-  Compromiso no autorizado de sistemas
+-  Cualquier actividad ilegal
 
 El autor y los contribuyentes no se hacen responsables del uso indebido de este material.
 
 ---
 
-## 📞 Contacto
+##  Contacto
 
-**Autor:** Angel Rojas  
+**Autores:** Angel Gil && Jorge Gonzalez
 **Evento:** HACKCON_RD 2026  
 **Repositorio:** [github.com/Angel-Rojas-ING/HACKCON_RD_2026_REMCOS](https://github.com/Angel-Rojas-ING/HACKCON_RD_2026_REMCOS)
 
 ---
 
-## 📚 Referencias
+##  Referencias
 
 - [MITRE ATT&CK Framework](https://attack.mitre.org/)
 - [Remcos RAT - MITRE ATT&CK](https://attack.mitre.org/software/S0332/)
@@ -240,7 +220,7 @@ El autor y los contribuyentes no se hacen responsables del uso indebido de este 
 
 ---
 
-## 📝 Licencia
+##  Licencia
 
 Este proyecto está bajo la licencia **MIT License**. Ver el archivo `LICENSE` para más detalles.
 
