@@ -1,11 +1,10 @@
 # TABLA DE IOC - REMCOS RAT (SyAlpha16.exe)
 
-**Fecha del Incidente:** 10 de Febrero de 2026  
-**Malware:** Remcos RAT (Remote Control & Surveillance)  
+**Malware:** Remcos RAT (Remote Control & Surveillance) 
+**Autores:** Angel Gil && Jorge Felix  
 **Vector Inicial:** Romulo.hta (HTML Application con VBScript)  
 **Dropper:** SyAlpha16.exe (Delphi)  
-**SHA-256 Principal:** `9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35`
-
+**SHA-256 Principales:** `9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35 && ABC0DA03C59F60C7F99D40EFFDA14C05057134082B681E776F18D2BBF21CF459 && ADB8347DFA1B1DF1CA2211FE4D7E82F27CED939F1BF3D52548E52BC9E23FC52C `
 ---
 
 ## CADENA DE INFECCIÓN COMPLETA
@@ -89,8 +88,7 @@ powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -Command "
 |------|------|-------------|-------|
 | **Vector Inicial** | `Romulo.hta` | Archivo HTA inicial (ubicación variable, típicamente descargado o adjunto en email) | T1105, T1059.001 |
 | **ZIP Descargado** | `C:\Users\Public\SyAlpha16.zip` | Archivo ZIP descargado por el HTA | T1105 |
-| **Dropper Temporal** | `C:\Users\Public\SyAlpha16.exe` | Dropper ejecutado desde Public (primera ejecución) | T1204.002 |
-| **Dropper Original** | `C:\Users\<USER>\Downloads\9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35\9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35\SyAlpha16.exe` | Ruta de ejecución secundaria (estructura con hash SHA-256) | T1204.002 |
+| **Dropper Inicial** | `C:\Users\Public\SyAlpha16.exe` | Dropper ejecutado desde Public (primera ejecución) | T1204.002 |
 | **Dropper Persistente** | `C:\ProgramData\store_adapter_x64\SyAlpha16.exe` | Copia persistente del dropper (2.5 MB) | T1053.005 |
 | **RAT Principal** | `C:\Users\<USER>\AppData\Local\FrameTrac32.exe` | Ejecutable del Remcos RAT (413 KB) | T1055.012 |
 | **Persistence Helper** | `C:\Users\<USER>\AppData\Local\store_adapter_x64\Chime.exe` | Helper que establece persistencia (634 KB) | T1053.005 |
@@ -309,174 +307,6 @@ powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -NoProfile -Command "
 
 ---
 
-## QUERIES PARA THREAT HUNTING
-
-### Windows Event Logs
-
-```powershell
-# Buscar ejecución de HTA (vector inicial)
-Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4688} | 
-    Where-Object {$_.Message -match 'mshta|Romulo\.hta'} | 
-    Select-Object TimeCreated, Message
-
-# Buscar ejecución de PowerShell con Bypass (HTA payload)
-Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-PowerShell/Operational'; ID=4104} | 
-    Where-Object {$_.Message -match 'ExecutionPolicy Bypass|Start-BitsTransfer|XSyAlpha16'} | 
-    Select-Object TimeCreated, Message
-
-# Buscar descargas con BITS
-Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Bits-Client/Operational'} | 
-    Where-Object {$_.Message -match '192.159.99.10|XSyAlpha16'} | 
-    Select-Object TimeCreated, Message
-
-# Buscar ejecución de procesos sospechosos
-Get-WinEvent -FilterHashtable @{LogName='Security'; ID=4688} | 
-    Where-Object {$_.Message -match 'SyAlpha16|FrameTrac32|Chime'} | 
-    Select-Object TimeCreated, Message
-
-# Buscar creación de tareas programadas
-Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-TaskScheduler/Operational'} | 
-    Where-Object {$_.Message -match 'CLI'} | 
-    Select-Object TimeCreated, Message
-```
-
-### Sysmon Queries
-
-```xml
-<!-- Detectar ejecución de HTA -->
-<EventID>1</EventID>
-<Image condition="end with">mshta.exe</Image>
-<CommandLine condition="contains">Romulo.hta</CommandLine>
-
-<!-- Detectar descarga de archivos (BITS o HTTP) -->
-<EventID>3</EventID>
-<DestinationIp>192.159.99.10</DestinationIp>
-<DestinationPort>80</DestinationPort>
-
-<!-- Detectar creación de archivos en rutas sospechosas -->
-<EventID>11</EventID>
-<TargetFilename condition="contains">store_adapter_x64</TargetFilename>
-<TargetFilename condition="contains">FrameTrac32</TargetFilename>
-<TargetFilename condition="contains">39D9641.tmp</TargetFilename>
-<TargetFilename condition="contains">SyAlpha16.zip</TargetFilename>
-<TargetFilename condition="contains">C:\Users\Public\SyAlpha16</TargetFilename>
-
-<!-- Detectar conexiones al C2 -->
-<EventID>3</EventID>
-<DestinationIp>192.159.99.19</DestinationIp>
-<DestinationPort>1122</DestinationPort>
-
-<!-- Detectar creación de mutex -->
-<EventID>13</EventID>
-<TargetObject condition="contains">Rmc-</TargetObject>
-```
-
-### YARA Rules (Conceptual)
-
-```yara
-rule Remcos_HTA_Vector {
-    strings:
-        $s1 = "ProcessRoutine886"
-        $s2 = "Start-BitsTransfer"
-        $s3 = "XSyAlpha16.zip"
-        $s4 = "192.159.99.10"
-        $s5 = "WScript.Shell"
-    condition:
-        3 of them
-}
-
-rule Remcos_RAT_Strings {
-    strings:
-        $s1 = "Remcos Agent initialized"
-        $s2 = "Remcos restarted by watchdog"
-        $s3 = "Watchdog module activated"
-        $s4 = "Offline Keylogger Started"
-    condition:
-        2 of them
-}
-```
-
-### Sigma Rules (Conceptual)
-
-```yaml
-title: Remcos HTA Vector Execution
-description: Detecta ejecución del HTA inicial que descarga el dropper
-logsource:
-    product: windows
-    service: sysmon
-detection:
-    selection:
-        EventID: 1
-        Image|endswith: 'mshta.exe'
-        CommandLine|contains: 'Romulo.hta'
-    condition: selection
-falsepositives:
-    - Unknown
-level: high
-
----
-title: Remcos PowerShell Download
-description: Detecta PowerShell ejecutando descarga del payload
-logsource:
-    product: windows
-    service: powershell
-detection:
-    selection:
-        EventID: 4104
-        ScriptBlockText|contains:
-            - 'Start-BitsTransfer'
-            - 'XSyAlpha16.zip'
-            - '192.159.99.10'
-    condition: selection
-falsepositives:
-    - Unknown
-level: high
-
----
-title: Remcos RAT C2 Communication
-description: Detecta conexiones al puerto 1122 usado por Remcos RAT
-logsource:
-    product: windows
-    service: sysmon
-detection:
-    selection:
-        EventID: 3
-        DestinationPort: 1122
-    condition: selection
-falsepositives:
-    - Unknown
-level: high
-```
-
----
-
-## NOTAS PARA HUNTING
-
-1. **Vector Inicial HTA:** El ataque comienza con un archivo HTA (`Romulo.hta`) que puede llegar por email, descarga directa, o USB. Buscar ejecuciones de `mshta.exe` con nombres de archivos genéricos como "Documento".
-
-2. **Descarga con BITS:** El HTA usa `Start-BitsTransfer` para descargar el payload. Monitorear tráfico BITS hacia IPs desconocidas, especialmente desde procesos `mshta.exe` o `powershell.exe`.
-
-3. **PowerShell Bypass:** El HTA ejecuta PowerShell con `-ExecutionPolicy Bypass` y `-WindowStyle Hidden`. Buscar estas flags en logs de PowerShell.
-
-4. **Ruta Public:** El payload inicial se descarga y ejecuta desde `C:\Users\Public\`, una ruta común para malware que busca evitar detección basada en rutas de usuario.
-
-5. **Variabilidad de IOC:** Muchos IOC tienen componentes aleatorios (mutex suffix, nombres de variables de entorno, nombres de archivos temporales). Buscar patrones en lugar de valores exactos.
-
-6. **Timestomping:** Los archivos tienen LastWriteTime falsificado. Usar ChangeTime ($MFT) para fechas reales.
-
-7. **WOW64:** Todo el malware corre en 32-bit. Los procesos aparecerán como WOW64 en herramientas de análisis.
-
-8. **Early Bird Injection:** La DLL se carga ANTES del EXE. Buscar procesos con orden de carga de imágenes invertido.
-
-9. **Persistencia Redundante:** Se crean DOS tareas programadas (TS 1.0 y TS 2.0). Verificar ambas ubicaciones.
-
-10. **Heartbeat:** El RAT consulta `bpbagtvi` cada ~3 segundos. Monitorear accesos repetidos a esta clave.
-
-11. **C2 Offline:** Durante la captura, el C2 no respondió. El RAT intenta reconectar indefinidamente. Buscar múltiples intentos de conexión fallidos.
-
-12. **Dos Servidores:** Hay dos IPs involucradas: `192.159.99.10` (descarga inicial) y `192.159.99.19` (C2 del RAT). Monitorear ambas.
-
----
-
 **Última actualización:** 10 de Febrero de 2026  
 **Fuente:** INFORME_DFIR_COMPLETO.md
+
