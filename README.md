@@ -230,6 +230,5 @@ Este proyecto está bajo la licencia **MIT License**. Ver el archivo `LICENSE` p
 
 **⭐ Si este repositorio te fue útil, considera darle una estrella ⭐**
 
-Made with ❤️ for the DFIR Community
-
+"In code we trust, in shadows we operate" 
 </div>
