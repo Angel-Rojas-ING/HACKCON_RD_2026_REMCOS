@@ -62,6 +62,12 @@ Este repositorio contiene el material completo del análisis de la campaña digi
 | **[MITRE_ATTACK_MATRIX_REMCOS.md](./MITRE_ATTACK_MATRIX_REMCOS.md)** | Matriz MITRE ATT&CK con mapeo completo de técnicas observadas |
 | **[REGLA_YARA.yar](./REGLA_YARA.yar)** | Reglas YARA para detección de variantes de Remcos RAT |
 
+### Herramientas
+
+| Archivo | Descripción |
+|---------|-------------|
+| **[remcosconfg-extract.py](./remcosconfg-extract.py)** | Extractor de configuración de Remcos RAT (v2.0) |
+
 ###  Muestras
 
 | Archivo | Descripción |
@@ -129,6 +135,7 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 - **YARA** - Detección de patrones
 - **Sysmon** - Logging avanzado
 - **PowerShell** - Análisis de logs y eventos
+- **remcosconfg-extract.py** - Extractor de configuración de Remcos RAT (desarrollado para esta charla)
 
 ### Fuentes de Evidencia
 
@@ -149,6 +156,87 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 
 ---
 
+## RemcosConfig Extractor v2.0
+
+Herramienta CLI para extraer y descifrar la configuración embebida en muestras de Remcos RAT.
+
+```
+  ____                               ____             __ _
+ |  _ \ ___ _ __ ___   ___ ___  ___ / ___|___  _ __  / _(_) __ _
+ | |_) / _ \ '_ ` _ \ / __/ _ \/ __| |   / _ \| '_ \| |_| |/ _` |
+ |  _ <  __/ | | | | | (_| (_) \__ \ |__| (_) | | | |  _| | (_| |
+ |_| \_\___|_| |_| |_|\___\___/|___/\____\___/|_| |_|_| |_|\__, |
+                                                             |___/
+                          E X T R A C T O R   v2.0
+```
+
+### Capacidades
+
+- Extrae y descifra configuración RC4 desde recursos RCDATA/SETTINGS del PE
+- Parsea C2 en formato `host:port:password`
+- Calcula hashes (SHA-256, MD5, SHA-1) de cada muestra
+- Detecta packers (UPX, Themida, VMProtect, entropía alta)
+- Detecta versión de Remcos (v1.x - v4.x)
+- Mapea ~45 campos de configuración organizados por categoría
+- Muestra flags como `[ON]`/`[OFF]` con colores
+- Interfaz CLI con colores, marcos y banner ASCII Art
+- Exporta a CSV y JSON
+- Soporte batch con resumen consolidado y barra de progreso
+
+### Requisitos
+
+```bash
+pip install pefile colorama
+```
+
+### Uso
+
+```bash
+# Extraer configuración de una muestra
+python remcosconfg-extract.py muestra.exe
+
+# Exportar a CSV y JSON
+python remcosconfg-extract.py muestra.exe --csv iocs.csv --json config.json
+
+# Batch (múltiples muestras)
+python remcosconfg-extract.py *.exe --csv campana.csv
+
+# Sin colores (para logs/pipelines)
+python remcosconfg-extract.py muestra.exe --no-color --no-banner
+```
+
+### Ejemplo de Salida
+
+```
+  +========================================================================+
+  | SAMPLE INFO                                                            |
+  +------------------------------------------------------------------------+
+  |  File      : FrameTrac32.exe                                           |
+  |  SHA-256   : 9f84bbd8179674ee35fd...                                   |
+  |  Packer    : None detected                                             |
+  |  Remcos    : v4.x                                                      |
+  +========================================================================+
+
+  +------------------------------------------------------------------------+
+  | NETWORK                                                                |
+  +------------------------------------------------------------------------+
+  |  [C2 #1]  192.159.99.19:1122  (password: (none))                      |
+  |  Connect Interval (s) : 1                                              |
+  |  TLS Enabled           [OFF]                                           |
+  +------------------------------------------------------------------------+
+
+  +------------------------------------------------------------------------+
+  | SURVEILLANCE                                                           |
+  +------------------------------------------------------------------------+
+  |  Keylogger             [ON]                                            |
+  |  Screenshots           [ON]                                            |
+  |  Audio Capture         [ON]                                            |
+  |  Clipboard Monitor     [OFF]                                           |
+  +------------------------------------------------------------------------+
+```
+
+---
+
 ##  Uso de los Recursos
 
 ### Para Threat Hunters
@@ -156,18 +244,20 @@ SHA-256: 9f84bbd8179674ee35fd11e94435df0c49c81bb5ca44c2f5ad4b5bec53f0ab35
 1. Consulta la [tabla de IOC](./IOC_TABLE_REMCOS_RAT.md) para crear reglas de detección
 2. Usa las [reglas YARA](./REGLA_YARA.yar) en tu infraestructura de detección
 3. Implementa las queries de la matriz MITRE en tu SIEM/EDR
+4. Usa el [extractor de configuración](./remcosconfg-extract.py) para analizar muestras y extraer IOCs automáticamente
 
 ### Para Analistas de Malware
 
 1. Revisa la cadena de infección completa en la documentación
 2. Analiza las técnicas de evasión documentadas
 3. Estudia el mapeo MITRE ATT&CK para entender el TTP completo
+4. Ejecuta `remcosconfg-extract.py` contra muestras para extraer C2, mutex, claves RC4 y capacidades activas
 
 ### Para Investigadores
 
 1. Descarga las muestras ( **SOLO EN ENTORNO AISLADO**)
 2. Reproduce el análisis usando la metodología documentada
-3. Contribuye con mejoras a las reglas YARA
+3. Contribuye con mejoras a las reglas YARA o al extractor de configuración
 
 ---
 
