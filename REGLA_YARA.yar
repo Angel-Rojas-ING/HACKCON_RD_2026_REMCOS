@@ -13,12 +13,12 @@ rule MAL_Remcos_RAT_Artifacts_And_Indicators
         mitre_attack = "T1056.001, T1105, T1059"
 
     strings:
-        // Artefactos PE asociados (dropper / binarios)
+        // Artefactos PE asociados
         $pe_file_1 = "FrameTrac32.exe" wide ascii nocase
         $pe_file_2 = "SyAlpha16.exe" wide ascii nocase
         $pe_file_3 = "Chime.exe" wide ascii nocase
 
-        // Artefacto no-PE (log de keylogger)
+        // Artefacto log de keylogger
         $log_file = "logs.dat" wide ascii nocase
 
         // Indicadores de keylogger (para dump de proceso)
