@@ -30,6 +30,6 @@ rule MAL_Remcos_RAT_Artifacts_And_Indicators
         // Requiere de almenos un indicador de keylogging y dos artefactos
         // Esta combinacion reduce falsos positivos ya que como sabemos los binarios son legitimos
         filesize < 10MB and
-        1 of ($indicator_*) and
+        1 of ($indicator_*) or
         2 of ($file_*)
 }
