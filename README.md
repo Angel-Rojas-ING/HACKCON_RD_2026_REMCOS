@@ -62,11 +62,6 @@ Este repositorio contiene el material completo del análisis de la campaña digi
 | **[MITRE_ATTACK_MATRIX_REMCOS.md](./MITRE_ATTACK_MATRIX_REMCOS.md)** | Matriz MITRE ATT&CK con mapeo completo de técnicas observadas |
 | **[REGLA_YARA.yar](./REGLA_YARA.yar)** | Reglas YARA para detección de variantes de Remcos RAT |
 
-### Herramientas
-
-| Archivo | Descripción |
-|---------|-------------|
-| **[remcosconfg-extract.py](./remcosconfg-extract.py)** | Extractor de configuración de Remcos RAT (v2.0) |
 
 ###  Muestras
 
